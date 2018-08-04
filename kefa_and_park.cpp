@@ -16,62 +16,45 @@
 #include<stdio.h>
 using namespace std;
 
+bool possible[100006];
+bool isCat[100006];
+bool visited[100006];
+int V,E,m;
+vector<int> adj[100006];
 
+void dfs(int src,int consec)
+{
+    visited[src]=true;
+    if(isCat[src]) consec++;
+    else consec=0;
 
+    if(consec<=m)
+    {
+        possible[src]=true;
+        for(int i=0;i<adj[src].size();i++)
+            if(!visited[adj[src][i]]) dfs(adj[src][i],consec);
+    }
+}
 
 int main()
 {
-    int a,b,c=0,d,i,j=0,k,l,counter=0;
-    cin>>a>>b;
-    int cat[a],edge[a-1][2],dele[a-1];
-
-    for(i=0;i<a;i++)
-        cin>>cat[i];
-    for(i=0;i<a-1;i++)
+    int a,b,ans=0;
+    cin>>V>>m;
+    for(int i=1;i<=V;i++) cin>>isCat[i];
+    for(int i=0;i<V-1;i++)
     {
-        dele[i]=0;
-        cin>>edge[i][0]>>edge[i][1];
+        cin>>a>>b;
+        adj[a].push_back(b);
+        adj[b].push_back(a);
     }
+    memset(possible,false,sizeof(possible));
+    memset(visited,false,sizeof(visited));
+    dfs(1,0);
 
-    for(i=0;i<a-1;i++)
+    for(int i=2;i<=V;i++)
     {
-
-        if(edge[i][0]==1)
-        {
-            if(cat[edge[i][1]-1])
-            {
-                dele[j]=edge[i][1];
-                j++;
-                c++;
-            }
-            else counter++;
-        }
-        else
-        {
-            d=0;
-            for(k=0;k<a-1;k++)
-            {
-                if(dele[k]==edge[i][0])
-                {
-                    d=1;
-                    break;
-                }
-            }
-            if(!d || c<=b)
-            {
-                 if(cat[edge[i][1]-1])
-                {
-                    dele[j]=edge[i][1];
-                    j++;
-                    c++;
-                }
-            else counter++;
-            }
-
-        }
-
-        }
-
-    cout<<counter<<endl;
+        if(adj[i].size()==1 && possible[i]) ans++;
+    }
+    cout<<ans<<endl;
     return 0;
 }
